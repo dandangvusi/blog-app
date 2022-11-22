@@ -2,6 +2,8 @@ package com.dan.blogapp.config;
 
 
 import com.dan.blogapp.security.CustomUserDetailService;
+import com.dan.blogapp.security.JwtAuthenticationEntryPoint;
+import com.dan.blogapp.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,18 +18,28 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private CustomUserDetailService customUserDetailService;
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @Autowired
-    public SecurityConfig(CustomUserDetailService customUserDetailService){
+    public SecurityConfig(CustomUserDetailService customUserDetailService,
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint){
         this.customUserDetailService = customUserDetailService;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(){
+        return new JwtAuthenticationFilter();
     }
     @Bean
-    PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder(){
+
         return new BCryptPasswordEncoder();
     }
     @Bean
@@ -36,6 +48,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -43,8 +56,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authz) -> authz
                         .antMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .antMatchers("/api/auth/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest()
+                        .authenticated())
                 .httpBasic(Customizer.withDefaults());
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean

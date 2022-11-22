@@ -1,11 +1,13 @@
 package com.dan.blogapp.controller;
 
+import com.dan.blogapp.dto.JwtAuthResponse;
 import com.dan.blogapp.dto.LoginDTO;
 import com.dan.blogapp.dto.SignupDTO;
 import com.dan.blogapp.entity.Role;
 import com.dan.blogapp.entity.User;
 import com.dan.blogapp.repository.RoleRepository;
 import com.dan.blogapp.repository.UserRepository;
+import com.dan.blogapp.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,22 +31,27 @@ public class AuthController {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    private JwtTokenProvider jwtTokenProvider;
     @Autowired
     public AuthController(AuthenticationManager authenticationManager,
                           UserRepository userRepository,
                           RoleRepository roleRepository,
-                          PasswordEncoder passwordEncoder){
+                          PasswordEncoder passwordEncoder,
+                          JwtTokenProvider jwtTokenProvider){
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<JwtAuthResponse> authenticateUser(@RequestBody LoginDTO loginDTO){
         Authentication auth_obj = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getUsernameOrEmail(), loginDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(auth_obj);
-        return new ResponseEntity<>("Logged in successfully", HttpStatus.OK);
+        // get jwt token from token provider
+        String token = this.jwtTokenProvider.generateToken(auth_obj);
+        return new ResponseEntity<>(new JwtAuthResponse(token), HttpStatus.OK);
     }
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupDTO signupDTO){
