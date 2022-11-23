@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/posts/{postId}/comments", produces = "application/json")
+@RequestMapping(value = "/api/v1/posts/{postId}/comments", produces = "application/json")
 public class CommentController {
     private CommentService commentService;
     @Autowired
