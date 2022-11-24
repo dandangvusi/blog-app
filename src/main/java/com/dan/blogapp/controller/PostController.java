@@ -5,6 +5,8 @@ import com.dan.blogapp.dto.PostDTOv2;
 import com.dan.blogapp.dto.PostResponse;
 import com.dan.blogapp.service.PostService;
 import com.dan.blogapp.utils.Constant;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import javafx.geometry.Pos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
+@Api(value = "CRUD APIs for post resource")
 @RestController
 @RequestMapping(produces="application/json")
 public class PostController {
@@ -27,12 +30,13 @@ public class PostController {
         this.postService = postService;
     }
 
+    @ApiOperation(value = "Create post REST API")
     @PostMapping(value = "/api/v1/posts", produces = "application/json")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO){
         return new ResponseEntity<>(this.postService.createPost(postDTO), HttpStatus.CREATED);
     }
-
+    @ApiOperation(value = "Get all posts REST API")
     @GetMapping(value = "/api/v1/posts", produces = "application/json")
     public ResponseEntity<PostResponse> getAllPost(
             @RequestParam(value = "pageNo", defaultValue = Constant.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -42,12 +46,12 @@ public class PostController {
     ){
         return new ResponseEntity<>(this.postService.getAllPost(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
-
+    @ApiOperation(value = "Get post by id REST API")
     @GetMapping(value = "/api/v1/posts/{id}", produces = "application/json")
     public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") long id){
         return new ResponseEntity<>(this.postService.getPostById(id), HttpStatus.OK);
     }
-
+    @ApiOperation(value = "Get post by id REST API ver 2")
     @GetMapping(value = "/api/v2/posts/{id}", produces = "application/json")
     public ResponseEntity<PostDTOv2> getPostByIdV2(@PathVariable(name = "id") long id){
         PostDTO postDTO = postService.getPostById(id);
@@ -64,6 +68,7 @@ public class PostController {
         return new ResponseEntity<>(postDTOv2, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get post by id REST API ver 3")
     @GetMapping(value = "/api/posts/{id}", produces = "application/json", params = "version=3")
     public ResponseEntity<PostDTOv2> getPostByIdV3(@PathVariable(name = "id") long id){
         PostDTO postDTO = postService.getPostById(id);
@@ -80,6 +85,7 @@ public class PostController {
         return new ResponseEntity<>(postDTOv2, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Get post by id REST API ver 4")
     @GetMapping(value = "/api/posts/{id}", produces = "application/json", headers = "API-VERSION=4")
     public ResponseEntity<PostDTOv2> getPostByIdV4(@PathVariable(name = "id") long id){
         PostDTO postDTO = postService.getPostById(id);
@@ -97,12 +103,14 @@ public class PostController {
         return new ResponseEntity<>(postDTOv2, HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Update post by id REST API")
     @PutMapping(value = "/api/v1/posts/{id}", produces = "application/json")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PostDTO> updatePostById(@Valid @RequestBody PostDTO postDTO, @PathVariable(name = "id") long id){
         return new ResponseEntity<>(this.postService.updatePostById(postDTO, id), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "Delete post by id REST API")
     @DeleteMapping(value = "/api/v1/posts/{id}", produces = "application/json")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deletePostById(@PathVariable(name = "id") long id){

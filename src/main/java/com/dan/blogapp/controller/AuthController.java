@@ -8,6 +8,8 @@ import com.dan.blogapp.entity.User;
 import com.dan.blogapp.repository.RoleRepository;
 import com.dan.blogapp.repository.UserRepository;
 import com.dan.blogapp.security.JwtTokenProvider;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 import java.util.Collections;
 
+@Api(value = "Authentication controller exposes sign in and sign up REST API")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -44,6 +47,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
     }
+    @ApiOperation(value = "REST API to sign in user to Blog app")
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> authenticateUser(@RequestBody LoginDTO loginDTO){
         Authentication auth_obj = this.authenticationManager.authenticate(
@@ -53,6 +57,7 @@ public class AuthController {
         String token = this.jwtTokenProvider.generateToken(auth_obj);
         return new ResponseEntity<>(new JwtAuthResponse(token), HttpStatus.OK);
     }
+    @ApiOperation(value = "REST API to sign up user to Blog app")
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupDTO signupDTO){
         if(this.userRepository.existsByUsername(signupDTO.getUsername())){
