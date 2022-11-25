@@ -46,6 +46,17 @@ public class PostController {
     ){
         return new ResponseEntity<>(this.postService.getAllPost(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
+    @ApiOperation(value = "Search post REST API")
+    @GetMapping(value = "/api/v1/posts/search", produces = "application/json")
+    public ResponseEntity<PostResponse> searchPost(
+            @RequestParam(value = "pageNo", defaultValue = Constant.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = Constant.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = Constant.DEFAULT_SORT_FIELD, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = Constant.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+            @RequestParam(value = "searchKeyword", defaultValue = "None", required = true) String searchKeyword
+    ){
+        return new ResponseEntity<>(this.postService.searchPost(pageNo, pageSize, sortBy, sortDir, searchKeyword), HttpStatus.OK);
+    }
     @ApiOperation(value = "Get post by id REST API")
     @GetMapping(value = "/api/v1/posts/{id}", produces = "application/json")
     public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") long id){

@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,6 +67,24 @@ public class PostServiceImpl implements PostService {
         post.setContent(postDTO.getContent());
         Post updated_post = this.postRepository.save(post);
         return Entity2DTO(updated_post);
+    }
+
+    @Override
+    public PostResponse searchPost(int pageNo, int pageSize, String sortBy, String sortDir, String searchKeyword) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.DESC.name()) ?
+                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Post> posts = this.postRepository.searchPosts(searchKeyword, pageable);
+        List<Post> postsList = posts.getContent();
+        List<PostDTO> dtoList = postsList.stream().map(post -> Entity2DTO(post)).collect(Collectors.toList());
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(dtoList);
+        postResponse.setPageNo(posts.getNumber());
+        postResponse.setPageSize(posts.getSize());
+        postResponse.setTotalElement(posts.getTotalElements());
+        postResponse.setTotalPage(posts.getTotalPages());
+        postResponse.setLast(posts.isLast());
+        return postResponse;
     }
 
     @Override

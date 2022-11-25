@@ -24,6 +24,7 @@ public class CommentController {
     }
     @ApiOperation(value = "Create comment REST API")
     @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<CommentDTO> createComment(@Valid @RequestBody CommentDTO commentDTO,
                                         @PathVariable(name = "postId") long postId){
         return new ResponseEntity(this.commentService.createComment(postId, commentDTO), HttpStatus.CREATED);

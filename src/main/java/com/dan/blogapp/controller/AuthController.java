@@ -71,7 +71,7 @@ public class AuthController {
         user.setUsername(signupDTO.getUsername());
         user.setEmail(signupDTO.getEmail());
         user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
-        Role role = this.roleRepository.findByRolename("ROLE_ADMIN").get();
+        Role role = this.roleRepository.findByRolename("ROLE_USER").get();
         user.setRoles(Collections.singleton(role));
         this.userRepository.save(user);
         return new ResponseEntity<>("User registered successfully!", HttpStatus.OK);
