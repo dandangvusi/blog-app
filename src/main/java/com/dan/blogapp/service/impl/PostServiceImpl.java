@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,7 @@ public class PostServiceImpl implements PostService {
         postResponse.setTotalElement(posts.getTotalElements());
         postResponse.setTotalPage(posts.getTotalPages());
         postResponse.setLast(posts.isLast());
+        LinkedList<String> l = null;
         return postResponse;
 
     }

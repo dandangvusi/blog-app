@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog app voice search demo</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.9.0/css/all.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/main.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <form action="http://localhost:8080/api/v1/posts/search" method="get" id="search-form">
+      <input type="text" name="searchKeyword" placeholder="Search post" autocomplete="off" autofocus>
+    </form>
+      <p class="info"></p>
+  </div>
+</body>
+</html>
